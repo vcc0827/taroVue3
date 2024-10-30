@@ -15,31 +15,31 @@ export default {
   tabBar: {
     custom: false,
     color: '#000000',
-    selectedColor: '#DC143C',
+    selectedColor: '#fa731d',
     backgroundColor: '#ffffff',
     list: [
       {
         pagePath: 'pages/recommend/index',
-        selectedIconPath: 'images/tabbar_home_on.png',
-        iconPath: 'images/tabbar_home.png',
+        selectedIconPath: 'images/recommend-selected.png',
+        iconPath: 'images/recommend.png',
         text: '推荐'
       },
       {
         pagePath: 'pages/home/index',
-        selectedIconPath: 'images/tabbar_cate_on.png',
-        iconPath: 'images/tabbar_cate.png',
+        selectedIconPath: 'images/home-selected.png',
+        iconPath: 'images/home.png',
         text: '单身库'
       },
       {
         pagePath: 'pages/message/index',
-        selectedIconPath: 'images/tabbar_cart_on.png',
-        iconPath: 'images/tabbar_cart.png',
+        selectedIconPath: 'images/message-selected.png',
+        iconPath: 'images/message.png',
         text: '消息'
       },
       {
         pagePath: 'pages/mine/index',
-        selectedIconPath: 'images/tabbar_my_on.png',
-        iconPath: 'images/tabbar_my.png',
+        selectedIconPath: 'images/mine-selected.png',
+        iconPath: 'images/mine.png',
         text: '我的'
       }
     ]

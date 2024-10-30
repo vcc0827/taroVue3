@@ -1,62 +1,51 @@
 <template>
   <cover-view class="tab-bar">
     <cover-view class="tab-bar-border"></cover-view>
-    <cover-view
-      v-for="(item, index) in list"
-      :key="index"
-      class="tab-bar-item"
-      @tap="switchTab(index, item.pagePath)"
-    >
-      <cover-image
-        :src="selected === index ? item.selectedIconPath : item.iconPath"
-      />
-      <cover-view
-        :style="{ color: selected === index ? selectedColor : color }"
-        >{{ item.text }}</cover-view
-      >
+    <cover-view v-for="(item, index) in list" :key="index" class="tab-bar-item" @tap="switchTab(index, item.pagePath)">
+      <cover-image :src="selected === index ? item.selectedIconPath : item.iconPath" />
+      <cover-view :style="{ color: selected === index ? selectedColor : color }">{{ item.text }}</cover-view>
     </cover-view>
   </cover-view>
 </template>
 
 <script setup>
-import Taro from "@tarojs/taro";
-import { useTabBarStore } from "../stores/tabBar.ts";
+import Taro from '@tarojs/taro';
+import { useTabBarStore } from '../stores/tabBar.ts';
 
 const store = useTabBarStore();
 const selected = store.selected;
-console.log("selected:", selected);
 
-const color = "#000000";
-const selectedColor = "#DC143C";
+const color = '#000000';
+const selectedColor = '#DC143C';
 const list = [
   {
-    pagePath: "/pages/recommend/index",
-    selectedIconPath: "../images/tabbar_home_on.png",
-    iconPath: "../images/tabbar_home.png",
-    text: "推荐",
+    pagePath: 'pages/recommend/index',
+    selectedIconPath: 'images/recommend-selected.png',
+    iconPath: 'images/recommend.png',
+    text: '推荐',
   },
   {
-    pagePath: "/pages/home/index",
-    selectedIconPath: "../images/tabbar_cate_on.png",
-    iconPath: "../images/tabbar_cate.png",
-    text: "单身库",
+    pagePath: 'pages/home/index',
+    selectedIconPath: 'images/home-selected.png',
+    iconPath: 'images/home.png',
+    text: '单身库',
   },
   {
-    pagePath: "/pages/message/index",
-    selectedIconPath: "../images/tabbar_cart_on.png",
-    iconPath: "../images/tabbar_cart.png",
-    text: "消息",
+    pagePath: 'pages/message/index',
+    selectedIconPath: 'images/message-selected.png',
+    iconPath: 'images/message.png',
+    text: '消息',
   },
   {
-    pagePath: "/pages/mine/index",
-    selectedIconPath: "../images/tabbar_my_on.png",
-    iconPath: "../images/tabbar_my.png",
-    text: "我的",
+    pagePath: 'pages/mine/index',
+    selectedIconPath: 'images/mine-selected.png',
+    iconPath: 'images/mine.png',
+    text: '我的',
   },
 ];
 
 const switchTab = (index, url) => {
-  console.log('index:', index,url);
+  console.log('index:', index, url);
   setSelected(index);
   Taro.switchTab({ url });
 };

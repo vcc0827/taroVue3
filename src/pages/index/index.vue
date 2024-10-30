@@ -1,6 +1,7 @@
 <template>
   <view class="index">
-    <Counter />
+    this is index page
+    <!-- <Counter /> -->
   </view>
 </template>
 
