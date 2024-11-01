@@ -10,7 +10,7 @@
           :current="current" @change="changeSwiper">
           <swiper-item v-for="(recommend, index) in recommends" :key="recommend.id" class="swiper-item">
             <scroll-view class="card" :scroll-y="true" :scroll-into-view="scrollIntoView" @scroll="scroll"
-              :scroll-top="scrollTop" v-if="index !== 6">
+              :enable-flex="true" :scroll-top="scrollTop" v-if="index !== 6">
               <view class="top">
                 <image class="bg__cover" :src="recommend.background" alt="" />
                 <view class="head_img">
@@ -45,7 +45,7 @@
                   <view class="info-item" v-if="recommend.school">毕业院校：{{ recommend.school }}</view>
                   <view class="info-item" v-if="recommend.position || recommend.job">职业：{{
                     recommend.position && recommend.position.length ? recommend.position : recommend.job
-                  }}</view>
+                    }}</view>
                 </view>
                 <view class="identify">
                   <view class="name">我的认证</view>
@@ -152,8 +152,8 @@
                 </view>
               </view>
             </scroll-view>
-            <scroll-view class="card empty__state" v-if="newUserList.length && index === 6" enable-flex scroll-y="true"
-              enhanced show-scrollbar="{{false}}" @scrollToLower="scrollBottom">
+            <scroll-view class="card empty__state" v-if="newUserList.length && index === 6" :enable-flex="true"
+              scroll-y="true" enhanced show-scrollbar="{{false}}" @scrollToLower="scrollBottom">
               <block>
                 <view class="recommend__title">新用户超级曝光</view>
                 <view class="recommend__sub-title" @tap="toGuide">上推荐页指南</view>
@@ -201,6 +201,9 @@
       </view>
     </view>
   </view>
+  <view class="overlays">
+    <nut-dialog title="1" content="这是提示弹框。" :visible="visible3" @cancel="onCancel" @ok="onOk" />
+  </view>
 </template>
 
 <script setup>
@@ -208,7 +211,6 @@ import { ref, onMounted, computed } from 'vue';
 import Taro from '@tarojs/taro';
 import { useRecommendStore, useSevenDaysStore } from '@/stores/user.ts';
 import { getImageUrl } from '@/pages/tools/imageFormat.ts';
-
 
 const recommendStore = useRecommendStore();
 const recommends = ref([]);
@@ -234,8 +236,21 @@ const tagBg = ref([
   'linear-gradient(151deg, #5FD3FC 0%, #4BA6FF 100%)',
   'linear-gradient(143deg, #FF9F6A 0%, #FF6A17 100%)',
 ]);
-
 const friendNick = ['甲', '乙', '丙', '丁']
+
+const tipsClick = () => {
+  visible3.value = true
+}
+
+const visible3 = ref(false);
+const onCancel = () => {
+  visible3.value = false;
+};
+
+const onOk = () => {
+  visible3.value = false;
+};
+
 
 const filterPrivateInfo = computed(() => {
   return Object.entries(recommends.value[current.value].private_info).filter(([key, value]) => {
@@ -355,6 +370,8 @@ onMounted(async () => {
   rollSwiper();
   handleSevenDays()
   handleRecommends();
+
+  tipsClick()
 });
 </script>
 
@@ -842,39 +859,5 @@ onMounted(async () => {
       }
     }
   }
-}
-
-.page-section-spacing {
-  margin-top: 60px;
-}
-
-.scroll-view_H {
-  white-space: nowrap;
-}
-
-.scroll-view-item {
-  height: 300px;
-}
-
-.scroll-view-item_H {
-  display: inline-block;
-  width: 100%;
-  height: 300px;
-}
-
-.custom-swiper {
-  height: 100%;
-}
-
-.demo-text-1 {
-  background: #ccc;
-}
-
-.demo-text-2 {
-  background: #999;
-}
-
-.demo-text-3 {
-  background: #666;
 }
 </style>
