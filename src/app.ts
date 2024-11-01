@@ -10,4 +10,6 @@ const App = createApp({
 
 App.use(createPinia());
 
+App.config.warnHandler = () => null;
+
 export default App;
