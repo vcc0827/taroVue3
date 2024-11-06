@@ -8,7 +8,9 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     Counter: typeof import('./src/components/Counter.vue')['default']
+    NutAnimate: typeof import('@nutui/nutui-taro')['Animate']
     NutButton: typeof import('@nutui/nutui-taro')['Button']
+    NutCell: typeof import('@nutui/nutui-taro')['Cell']
     NutPopup: typeof import('@nutui/nutui-taro')['Popup']
     SignOverlay: typeof import('./src/components/SignOverlay.vue')['default']
   }

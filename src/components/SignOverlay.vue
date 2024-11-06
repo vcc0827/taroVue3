@@ -1,33 +1,52 @@
 <template>
   <view>
-    <nut-popup :visible="overlayVisible" class="sign-overlay" @click-overlay="handleClickOverlay"
-      :style="{ padding: '0', width: '650rpx', borderRadius: '48rpx' }">
+    <nut-popup
+      :visible="overlayVisible"
+      class="sign-overlay"
+      @click-overlay="handleClickOverlay"
+      :style="{ padding: '0', width: '650rpx', borderRadius: '48rpx' }"
+    >
       <view class="sign-title">个人信息保护指引</view>
       <view class="sign-content">
         <view class="sign-content-paragraph">亲爱的用户，欢迎您信任并使用牵线计划小程序！</view>
-        <view class="sign-content-paragraph">为了更好地保障您的个人信息，我们依据相关法律制定了<text @tap="toWebView('agree')"
-            class="sign-content-links">《<text class="sign-under-line">用户协议</text>》</text>
+        <view class="sign-content-paragraph"
+          >为了更好地保障您的个人信息，我们依据相关法律制定了<text @tap="toWebView('agree')" class="sign-content-links"
+            >《<text class="sign-under-line">用户协议</text>》</text
+          >
           和
-          <text class="sign-content-links" @tap="toWebView('privacy')">《<text
-              class="sign-under-line">隐私政策</text>》</text>，请您在点击同意之前仔细阅读并充分理解相关条款，包括但不限于我们为您提供的服务，您享有的权利，我们如何收集、使用、存储、共享您的个人信息等。
+          <text class="sign-content-links" @tap="toWebView('privacy')"
+            >《<text class="sign-under-line">隐私政策</text>》</text
+          >，请您在点击同意之前仔细阅读并充分理解相关条款，包括但不限于我们为您提供的服务，您享有的权利，我们如何收集、使用、存储、共享您的个人信息等。
         </view>
         <view class="sign-content-paragraph">
-          一旦您主动点击“同意并注册”按钮即表明您已经仔细阅读、充分理解并完全接受以上协议的全部内容，并表明您也同意牵线计划可以依据以上协议内容来处理您的个人信息。</view>
+          一旦您主动点击“同意并注册”按钮即表明您已经仔细阅读、充分理解并完全接受以上协议的全部内容，并表明您也同意牵线计划可以依据以上协议内容来处理您的个人信息。</view
+        >
         <view class="sign-content-paragraph">
           <view>为了便于您快速了解我们如何处理您的个人信息，我们提供隐私政策的重点摘要如下：</view>
           <view>
-            1、当您注册时，为了完成创建账号，以便我们为您提供服务，您需要提供您的手机号码，我们会向您的<text style="font-weight: 600">手机号码</text>发送短信验证码以验证您的身份。
+            1、当您注册时，为了完成创建账号，以便我们为您提供服务，您需要提供您的手机号码，我们会向您的<text
+              style="font-weight: 600"
+              >手机号码</text
+            >发送短信验证码以验证您的身份。
           </view>
-          <view>2、为了保障您正常使用牵线计划的产品或服务，您需创建您个人信息资料，您需要填写您的<text style="font-weight: 600">性别、年龄、身高、学历、收入、职业、现居地</text>;
-            此外，您还可以选填信息（包括<text
-              style="font-weight: 600">称呼、房产、车辆、照片、自我描述、理想对象</text>等资料信息）您在本网站上公开发布的个人信息，任何登陆到我们产品或使用我们产品的第三人均可全部或部分的查看，以提高您通过我们产品相亲成功的机会。您提供这些信息即表示您同意我们不同程度地向我们产品的使用者披露。
+          <view
+            >2、为了保障您正常使用牵线计划的产品或服务，您需创建您个人信息资料，您需要填写您的<text
+              style="font-weight: 600"
+              >性别、年龄、身高、学历、收入、职业、现居地</text
+            >; 此外，您还可以选填信息（包括<text style="font-weight: 600"
+              >称呼、房产、车辆、照片、自我描述、理想对象</text
+            >等资料信息）您在本网站上公开发布的个人信息，任何登陆到我们产品或使用我们产品的第三人均可全部或部分的查看，以提高您通过我们产品相亲成功的机会。您提供这些信息即表示您同意我们不同程度地向我们产品的使用者披露。
           </view>
           <view>
-            3、我们的部分<text style="font-weight: 600">线下婚恋服务</text>可能需要<text
-              style="font-weight: 600">第三方</text>来提供，一旦您同意授权并使用我们产品或成为会员（无论是付费还是免费），则表示您已许可我们将这些信息披露给我们的附属公司、母公司和相关联的第三方商业机构，包括但不限于牵线计划线下婚介服务授权店等，详情请见《隐私政策》中的<text
-              @tap="toWebView('third-party-list')" class="sign-content-links">《<text
-                class="sign-under-line">第三方数据合作清单</text>》。</text><text
-              class="sign-content-links">为了提供更好更精准的服务，我们最多只会筛选清单中最匹配您的一家合作方共提供服务所必要的个人信息，我们的合作伙伴无权将共享的个人信息用于与产品或服务无关的其他用途。</text>
+            3、我们的部分<text style="font-weight: 600">线下婚恋服务</text>可能需要<text style="font-weight: 600"
+              >第三方</text
+            >来提供，一旦您同意授权并使用我们产品或成为会员（无论是付费还是免费），则表示您已许可我们将这些信息披露给我们的附属公司、母公司和相关联的第三方商业机构，包括但不限于牵线计划线下婚介服务授权店等，详情请见《隐私政策》中的<text
+              @tap="toWebView('third-party-list')"
+              class="sign-content-links"
+              >《<text class="sign-under-line">第三方数据合作清单</text>》。</text
+            ><text class="sign-content-links"
+              >为了提供更好更精准的服务，我们最多只会筛选清单中最匹配您的一家合作方共提供服务所必要的个人信息，我们的合作伙伴无权将共享的个人信息用于与产品或服务无关的其他用途。</text
+            >
           </view>
         </view>
         <view class="sign-content-paragraph">
@@ -36,13 +55,15 @@
       </view>
       <view class="sign-btns-ad">
         <button class="sign-disagree-btn-ad" @tap="disagree">不同意</button>
-        <button class="sign-agree-btn-ad" v-if="isAgree && !hasPhone" open-type="getRealtimePhoneNumber"
-          @GetRealTimePhoneNumber="fetchPhoneNumber">
+        <button
+          class="sign-agree-btn-ad"
+          v-if="isAgree && !hasPhone"
+          open-type="getRealtimePhoneNumber"
+          @GetRealTimePhoneNumber="fetchPhoneNumber"
+        >
           同意并注册
         </button>
-        <button class="sign-agree-btn-ad" v-else-if="isAgree && hasPhone" @tap="navigateToSignup">
-          同意并注册
-        </button>
+        <button class="sign-agree-btn-ad" v-else-if="isAgree && hasPhone" @tap="navigateToSignup">同意并注册</button>
         <button class="sign-agree-btn-ad" v-else @tap="checkAgree">同意并注册</button>
       </view>
     </nut-popup>
@@ -50,61 +71,60 @@
 </template>
 
 <script setup>
-import { ref, computed, defineProps, defineEmits } from 'vue'
-import Taro from '@tarojs/taro'
+import { ref, computed, defineProps, defineEmits } from 'vue';
+import Taro from '@tarojs/taro';
 import { useRouteStore } from 'src/stores/common';
 
 const props = defineProps({
   visible: {
     type: Boolean,
-    default: false
-  }
-})
+    default: false,
+  },
+});
 
 const overlayVisible = computed(() => {
-  return props.visible
-})
+  return props.visible;
+});
 
-const emit = defineEmits(['close'])
+const emit = defineEmits(['close']);
 
-const isAgree = ref(true)
-const hasPhone = ref(false)
+const isAgree = ref(true);
+const hasPhone = ref(false);
 const conf = ref({
-  webView: 'https://h5.midonglab.com'
-})
-const routeStore = useRouteStore()
+  webView: 'https://h5.midonglab.com',
+});
+const routeStore = useRouteStore();
 
 const handleClickOverlay = (e) => {
   console.log('click overlay', e);
-  emit('close')
-}
+  emit('close');
+};
 const toWebView = (type) => {
   const src = `${conf.value.webView}/${type}?project=match&t=${Date.now()}`;
-  routeStore.setRouteOption(src)
+  routeStore.setRouteOption(src);
   Taro.navigateTo({
     url: '/sub-package/web-view/index',
-  })
-}
+  });
+};
 
 const disagree = () => {
-  emit('close')
-}
+  emit('close');
+};
 
 const fetchPhoneNumber = (e) => {
   console.log('phoneNumber e:', e);
   console.log('phoneNumber e.mpEvent:', e.mpEvent);
-  const { errMsg, code } = e.mpEvent.detail
+  const { errMsg, code } = e.mpEvent.detail;
   if (errMsg !== 'getPhoneNumber:ok') {
     console.log('请授权手机号');
   }
   // 把code传到校验接口中
-}
-
-
+};
 </script>
 
 <style lang="scss">
-.sign-overlay {}
+.sign-overlay {
+}
 
 .sign-title {
   text-align: center;
@@ -296,6 +316,42 @@ const fetchPhoneNumber = (e) => {
     &::after {
       display: none;
     }
+  }
+}
+
+.custom-popup {
+  transition: all 0.3s ease-in-out;
+}
+
+/* 进入动画 */
+.custom-popup[aria-hidden='false'] {
+  animation: slideInFromBottom 3s ease-out forwards;
+}
+
+/* 离开动画 */
+.custom-popup[aria-hidden='true'] {
+  animation: slideOutToBottom 3s ease-in forwards;
+}
+
+@keyframes slideInFromBottom {
+  0% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutToBottom {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100%);
+    opacity: 0;
   }
 }
 </style>

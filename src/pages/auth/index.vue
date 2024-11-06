@@ -19,6 +19,10 @@
     <view class="btns">
       <button class="login" @tap="handleOverlayAndLogin">快捷登录</button>
     </view>
+    <nut-cell title="Round" is-link @click="show = true"></nut-cell>
+    <nut-popup v-model:visible="show" transition="slide-right" closeable round :style="{ height: '20%' }">
+      <view class="" style="background: #fff">content</view>
+    </nut-popup>
   </view>
 
   <view class="overlays">
@@ -58,22 +62,22 @@ const handleCloseOverlay = () => {
   showOverlay.value = false;
 };
 
+const show = ref(false);
 const navbarStore = useNavbarStore();
 
 const paddingTop = computed(() => {
   if (navbarStore.navBarHeight === 0) {
     const windowInfo = Taro.getWindowInfo();
     const menuButton = Taro.getMenuButtonBoundingClientRect();
-
     let statusBarHeight = windowInfo.statusBarHeight || navbarStore.defaultStatusBarHeight;
     navbarStore.setStatusBarHeight(statusBarHeight);
-
     navbarStore.setMenuButtonInfo(menuButton.top, menuButton.height);
   }
   return navbarStore.navBarHeight + navbarStore.statusBarHeight;
 });
+
 const handleOverlayAndLogin = () => {
-  console.log('handleOverlayAndLogin');
+  console.log(1);
   showOverlay.value = true;
 };
 
@@ -173,5 +177,49 @@ onMounted(() => {
     margin-bottom: 44rpx;
     color: #fff;
   }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+.slide-fade-enter-active {
+  transition: all 0.3s ease;
+}
+.slide-fade-leave-active {
+  transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1);
+}
+.slide-fade-enter,
+.slide-fade-leave-to {
+  transform: translateY(10px);
+  opacity: 0;
+}
+
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
 }
 </style>

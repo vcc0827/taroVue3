@@ -462,7 +462,7 @@ const goToAuth = () => {
 };
 
 onMounted(() => {
-  if (checkPermission()) {
+  if (!checkPermission()) {
     goToAuth();
     return;
   }
