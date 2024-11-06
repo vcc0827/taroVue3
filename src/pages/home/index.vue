@@ -1,33 +1,64 @@
 <template>
-  <view class="home-container">
-    <swiper class="home-swiper" :autoplay="true" :interval="3000" :indicator-dots="true" @change="onSwiperChange">
-      <block v-for="(item, index) in images " :key="item">
-        <swiper-item>
-          <image class="top__image" @tap="handleSwiperClick(index)" data-index="{{index}}"
-            :src="`${item}?imageView2/1/w/650/h/230/q/100`" lazy-load></image>
-        </swiper-item>
-      </block>
-    </swiper>
-  </view>
+  <default-layout>
+    <view class="home-container">
+      <swiper class="home-swiper" :autoplay="true" :interval="3000" :indicator-dots="true" @change="onSwiperChange">
+        <block v-for="(item, index) in images" :key="item">
+          <swiper-item>
+            <image
+              class="top__image"
+              :show-menu-by-longpress="true"
+              data-index="{{index}}"
+              :src="`${item}?imageView2/1/w/650/h/230/q/100`"
+              lazy-load
+            ></image>
+          </swiper-item>
+        </block>
+      </swiper>
+
+      <nut-button @tap="goAuth">go auth</nut-button>
+    </view>
+  </default-layout>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import Taro from '@tarojs/taro'
+import { onMounted, ref } from 'vue';
+import Taro from '@tarojs/taro';
+import DefaultLayout from '../../layout/index.vue';
+
+const onCancel = () => {
+  console.log('取消');
+};
+
+const onConfirm = () => {
+  console.log('确认');
+};
 
 const images = ref([
   'https://static.hamu.site/mini/home/match_group-swiper.png',
-  'https://static.hamu.site/mini/home/official-account-swiper.png'
-])
+  'https://static.hamu.site/mini/home/official-account-swiper.png',
+]);
 
 const onSwiperChange = (e) => {
   // 留给事件上报使用
-}
+};
 
 const handleSwiperClick = (index) => {
-  console.log('handleSwiperClicked! ', index)
-}
+  console.log('handleSwiperClicked! ', index);
+};
 
+const toWebView = (e) => {
+  console.log('toWebView: ', e);
+};
+
+const goAuth = () => {
+  console.log('goAuth');
+
+  Taro.navigateTo({
+    url: '/pages/auth/index',
+  });
+};
+
+onMounted(() => {});
 </script>
 
 <style lang="scss">

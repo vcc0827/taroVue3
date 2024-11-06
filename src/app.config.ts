@@ -1,10 +1,10 @@
 export default {
-  pages: ['pages/recommend/index', 'pages/home/index', 'pages/message/index', 'pages/mine/index'],
+  pages: ['pages/recommend/index', 'pages/home/index', 'pages/message/index', 'pages/mine/index', 'pages/auth/index'],
+  subPackages: [{ root: 'sub-package', pages: ['write-info/index', 'core-info/index', 'web-view/index'] }],
   window: {
     backgroundTextStyle: 'light',
     navigationBarBackgroundColor: '#fff',
-    navigationBarTitleText: 'WeChat',
-    navigationBarTextStyle: 'black',
+    navigationStyle: 'custom',
   },
   tabBar: {
     custom: false,

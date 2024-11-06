@@ -1,3 +1,1 @@
-export default {
-  navigationBarTitleText: '推荐',
-};
+export default {};
