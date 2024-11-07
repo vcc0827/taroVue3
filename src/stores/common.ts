@@ -10,8 +10,8 @@ import Taro from '@tarojs/taro';
  */
 export const useRouteStore = defineStore('route', {
   state: () => ({
-    route: '',
-    options: '',
+    route: ref(''),
+    options: ref(''),
   }),
   actions: {
     setRouteOption(options: string | object) {
@@ -41,22 +41,20 @@ export const useDeviceStore = defineStore('device', {
 });
 
 export const usePermissionStore = defineStore('permission', {
-  state: () => {
-    return {
-      isRegister: ref(false),
-      isAdSource: ref(false),
-      hasPhone: ref(false),
-    };
-  },
+  state: () => ({
+    isRegister: ref(false),
+    isAdSource: ref(false),
+    hasPhone: ref(false),
+  }),
   actions: {
     updateRegister(value: Boolean) {
-      this.isRegister.value = value;
+      this.isRegister = value;
     },
     updateAdSource(value: Boolean) {
-      this.isAdSource.value = value;
+      this.isAdSource = value;
     },
     updateHasPhone(value: Boolean) {
-      this.hasPhone.value = value;
+      this.hasPhone = value;
     },
   },
 });

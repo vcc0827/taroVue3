@@ -53,16 +53,39 @@
           如果您不同意接受本协议的任一内容请不要进行后续操作。如对本协议内容有任何疑问、意见或建议，您可通过牵线计划客服与我们联系。
         </view>
       </view>
+      <nut-animate type="shake" :show="isShake">
+        <view class="sign-protocol">
+          <view :class="showBubble ? 'circle-tips' : 'transparent'" @tap="changeIsAgree">
+            <view :class="showBubble ? 'arrow-box' : 'arrowbox_transparent'">
+              <span>请先阅读并同意协议</span>
+            </view>
+          </view>
+          <view class="sign-protocol-tips">
+            <image
+              @tap="changeIsAgree"
+              style="width: 40rpx; height: 40rpx; margin-right: 16rpx; padding-left: 48rpx"
+              :src="isAgree ? selectedImg : unSelectedImg"
+            />
+            <view class="tips">
+              <text @tap="changeIsAgree">我已阅读并同意</text>
+              <view class="sign-protocol-links" @tap="toWebView('agree')">《用户协议》</view>
+              和
+              <view class="sign-protocol-links" @tap="toWebView('privacy')">《隐私政策》</view>
+            </view>
+          </view>
+        </view>
+      </nut-animate>
       <view class="sign-btns-ad">
         <button class="sign-disagree-btn-ad" @tap="disagree">不同意</button>
-        <button
+        <button class="sign-agree-btn-ad" v-if="isAgree && !hasPhone" @tap="navigateToSignup">同意并注册</button>
+        <!-- <button
           class="sign-agree-btn-ad"
           v-if="isAgree && !hasPhone"
           open-type="getRealtimePhoneNumber"
           @GetRealTimePhoneNumber="fetchPhoneNumber"
         >
           同意并注册
-        </button>
+        </button> -->
         <button class="sign-agree-btn-ad" v-else-if="isAgree && hasPhone" @tap="navigateToSignup">同意并注册</button>
         <button class="sign-agree-btn-ad" v-else @tap="checkAgree">同意并注册</button>
       </view>
@@ -71,9 +94,10 @@
 </template>
 
 <script setup>
-import { ref, computed, defineProps, defineEmits } from 'vue';
+import { ref, reactive, computed } from 'vue';
 import Taro from '@tarojs/taro';
-import { useRouteStore } from 'src/stores/common';
+import { useRouteStore, usePermissionStore } from 'src/stores/common';
+import { useCustomerInfoStore } from 'src/stores/user';
 
 const props = defineProps({
   visible: {
@@ -86,17 +110,20 @@ const overlayVisible = computed(() => {
   return props.visible;
 });
 
-const emit = defineEmits(['close']);
+const isShake = ref(false);
 
-const isAgree = ref(true);
+const emit = defineEmits(['close']);
+const showBubble = ref(true);
+const isAgree = ref(false);
 const hasPhone = ref(false);
 const conf = ref({
   webView: 'https://h5.midonglab.com',
 });
+const selectedImg = ref('https://cdn.nodejs.cloud/match-plan/checked.png');
+const unSelectedImg = ref('https://static.hamu.site/mini/number-check/unchecked.png');
 const routeStore = useRouteStore();
 
 const handleClickOverlay = (e) => {
-  console.log('click overlay', e);
   emit('close');
 };
 const toWebView = (type) => {
@@ -107,18 +134,83 @@ const toWebView = (type) => {
   });
 };
 
+const changeIsAgree = () => {
+  isAgree.value = !isAgree.value;
+};
+
 const disagree = () => {
   emit('close');
 };
+const openToast = (title) => {
+  Taro.showToast({
+    title: title || '',
+    icon: 'none',
+    duration: 2000,
+  });
+};
+const checkAgree = () => {
+  if (!isAgree.value) {
+    isShake.value = true;
+    setTimeout(() => {
+      isShake.value = false;
+    }, 500);
+  }
+};
+
+const permissionStore = usePermissionStore();
+const customerInfo = useCustomerInfoStore();
 
 const fetchPhoneNumber = (e) => {
-  console.log('phoneNumber e:', e);
-  console.log('phoneNumber e.mpEvent:', e.mpEvent);
   const { errMsg, code } = e.mpEvent.detail;
   if (errMsg !== 'getPhoneNumber:ok') {
-    console.log('请授权手机号');
+    openToast('请授权手机号码');
+    return;
   }
-  // 把code传到校验接口中
+  if (e.detail.errMsg != 'getPhoneNumber:ok') {
+    openToast('请授权手机号码');
+    return;
+  }
+  try {
+    // const phoneNumber = await rpc.blind.mini.getRealtimePhoneNumber(code);
+    if (code) {
+      permissionStore.updateHasPhone(true);
+      const list = {
+        ...customerInfo.list,
+        privacy_information: {
+          手机号: phoneNumber,
+        },
+      };
+      customerInfo.updateCustomerInfo(list);
+      // wx.mew.customer_info.privacy_information['手机号'] = phoneNumber;
+      // await syncPromise(true);
+      return navigateToSignup();
+    } else {
+      openToast('授权手机号失败,请稍后重试');
+    }
+  } catch (error) {
+    openToast('请授权手机号码');
+    return;
+  } finally {
+    emit('close');
+  }
+};
+
+const navigateToSignup = () => {
+  // Taro.reLaunch('/pages/recommend/index');
+  const { isAdSource } = permissionStore;
+  const { isRegister } = customerInfo;
+  if (isRegister && isAdSource) {
+    Taro.reLaunch('/pages/recommend/index');
+    return;
+  }
+
+  const url = isAdSource ? '/sub-package/process-ad/index' : '/sub-package/process-nature/index';
+  Taro.navigateTo({
+    url,
+    fail: (err) => {
+      console.log(err);
+    },
+  });
 };
 </script>
 
@@ -316,6 +408,41 @@ const fetchPhoneNumber = (e) => {
     &::after {
       display: none;
     }
+  }
+}
+
+.shaking-tips {
+  animation-delay: 0s;
+  animation-duration: 0.5s;
+  animation-iteration-count: 1;
+  animation-name: shake-tips-horizontal;
+  animation-play-state: running;
+  animation-timing-function: ease-in-out;
+}
+
+@keyframes shake-tips-horizontal {
+  0% {
+    transform: translateX(0);
+  }
+
+  20% {
+    transform: translateX(-20rpx);
+  }
+
+  40% {
+    transform: translateX(20rpx);
+  }
+
+  60% {
+    transform: translateX(-10rpx);
+  }
+
+  80% {
+    transform: translateX(10rpx);
+  }
+
+  100% {
+    transform: translateX(0);
   }
 }
 

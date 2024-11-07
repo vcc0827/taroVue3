@@ -19,10 +19,6 @@
     <view class="btns">
       <button class="login" @tap="handleOverlayAndLogin">快捷登录</button>
     </view>
-    <nut-cell title="Round" is-link @click="show = true"></nut-cell>
-    <nut-popup v-model:visible="show" transition="slide-right" closeable round :style="{ height: '20%' }">
-      <view class="" style="background: #fff">content</view>
-    </nut-popup>
   </view>
 
   <view class="overlays">
@@ -32,11 +28,24 @@
 
 <script setup>
 import Taro from '@tarojs/taro';
+import { getCurrentInstance } from '@tarojs/taro';
 import { ref, computed, onMounted } from 'vue';
-import { useNavbarStore } from 'src/stores/common';
+import { useNavbarStore, usePermissionStore, useRouteStore } from 'src/stores/common';
+import { useCustomerInfoStore } from 'src/stores/user';
 import SignOverlay from 'src/components/SignOverlay.vue';
 
+// 常量
 const LOGO_IMG = 'https://static.hamu.site/mini/match_mini_logo.png?imageView2/1/w/140/h/140/format/webp/q/100';
+
+// Store
+const navbarStore = useNavbarStore();
+const routeStore = useRouteStore();
+const permissionStore = usePermissionStore();
+const customerInfo = useCustomerInfoStore();
+
+// Refs
+const showOverlay = ref(false);
+const show = ref(false);
 const infoItemList = ref([
   {
     id: 1,
@@ -57,14 +66,8 @@ const infoItemList = ref([
     image: 'https://static.hamu.site/mini/auth/match_auth_icon_3.png',
   },
 ]);
-const showOverlay = ref(false);
-const handleCloseOverlay = () => {
-  showOverlay.value = false;
-};
 
-const show = ref(false);
-const navbarStore = useNavbarStore();
-
+// Computed
 const paddingTop = computed(() => {
   if (navbarStore.navBarHeight === 0) {
     const windowInfo = Taro.getWindowInfo();
@@ -76,13 +79,31 @@ const paddingTop = computed(() => {
   return navbarStore.navBarHeight + navbarStore.statusBarHeight;
 });
 
+// Methods
+const handleCloseOverlay = () => {
+  showOverlay.value = false;
+};
+
 const handleOverlayAndLogin = () => {
-  console.log(1);
   showOverlay.value = true;
 };
 
-const initData = () => {};
+const getRouteOptions = () => {
+  const instance = getCurrentInstance();
+  routeStore.setRouteOption(instance.router.params);
+  const routeOptions = routeStore.options;
+  if (routeOptions.originSource) {
+    permissionStore.updateAdSource(true);
+  }
+};
 
+const initData = () => {
+  getRouteOptions();
+  // bindUserSource
+  showOverlay.value = true;
+};
+
+// Lifecycle hooks
 onMounted(() => {
   // 初始化
   initData();

@@ -14,8 +14,7 @@
           </swiper-item>
         </block>
       </swiper>
-
-      <nut-button @tap="goAuth">go auth</nut-button>
+      <nut-button type="primary" @tap="goAuth">goAuth</nut-button>
     </view>
   </default-layout>
 </template>
@@ -24,14 +23,10 @@
 import { onMounted, ref } from 'vue';
 import Taro from '@tarojs/taro';
 import DefaultLayout from '../../layout/index.vue';
+import { useRouteStore } from 'src/stores/common';
+import { getCurrentInstance } from '@tarojs/taro';
 
-const onCancel = () => {
-  console.log('取消');
-};
-
-const onConfirm = () => {
-  console.log('确认');
-};
+const routeStore = useRouteStore();
 
 const images = ref([
   'https://static.hamu.site/mini/home/match_group-swiper.png',
@@ -46,19 +41,19 @@ const handleSwiperClick = (index) => {
   console.log('handleSwiperClicked! ', index);
 };
 
-const toWebView = (e) => {
-  console.log('toWebView: ', e);
-};
-
 const goAuth = () => {
-  console.log('goAuth');
-
   Taro.navigateTo({
     url: '/pages/auth/index',
   });
 };
 
-onMounted(() => {});
+const setOptions = () => {
+  const instance = getCurrentInstance();
+  routeStore.setRouteOption(instance.router.params);
+};
+onMounted(() => {
+  setOptions();
+});
 </script>
 
 <style lang="scss">

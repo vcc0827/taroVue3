@@ -12,6 +12,8 @@ declare module 'vue' {
     NutButton: typeof import('@nutui/nutui-taro')['Button']
     NutCell: typeof import('@nutui/nutui-taro')['Cell']
     NutPopup: typeof import('@nutui/nutui-taro')['Popup']
+    NutToast: typeof import('@nutui/nutui-taro')['Toast']
     SignOverlay: typeof import('./src/components/SignOverlay.vue')['default']
+    SignOverlay2: typeof import('./src/components/SignOverlay2.vue')['default']
   }
 }
