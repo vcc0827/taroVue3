@@ -10,10 +10,13 @@ declare module 'vue' {
     Counter: typeof import('./src/components/Counter.vue')['default']
     NutAnimate: typeof import('@nutui/nutui-taro')['Animate']
     NutButton: typeof import('@nutui/nutui-taro')['Button']
-    NutCell: typeof import('@nutui/nutui-taro')['Cell']
+    NutGrid: typeof import('@nutui/nutui-taro')['Grid']
+    NutGridItem: typeof import('@nutui/nutui-taro')['GridItem']
+    NutInput: typeof import('@nutui/nutui-taro')['Input']
+    NutPicker: typeof import('@nutui/nutui-taro')['Picker']
     NutPopup: typeof import('@nutui/nutui-taro')['Popup']
-    NutToast: typeof import('@nutui/nutui-taro')['Toast']
+    NutRange: typeof import('@nutui/nutui-taro')['Range']
     SignOverlay: typeof import('./src/components/SignOverlay.vue')['default']
-    SignOverlay2: typeof import('./src/components/SignOverlay2.vue')['default']
+    SignOverlayBackup: typeof import('./src/components/SignOverlayBackup.vue')['default']
   }
 }

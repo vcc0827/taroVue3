@@ -17,8 +17,9 @@ export const pageConfigs: Record<string, PageConfig> = {
     title: '我的',
     showBack: false,
   },
-  'pages/auth/index': {
-    title: 'index',
-    showHome: true,
+  'sub-package/process-ad/index': {
+    title: '注册流程',
+    showHome: false,
+    showBack: false,
   },
 };
