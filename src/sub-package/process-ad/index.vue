@@ -188,18 +188,14 @@
             </view>
             <text class="area-title">选择你的居住地</text>
             <view class="address-box-wrapper">
-              <!-- <van-area
-                class="custom-area"
-                value="{{livingPlaceCodes}}"
-                area-list="{{areaList}}"
-                columns-num="{{2}}"
-                columns-placeholder="{{ [ '请选择'] }}"
-                item-height="40"
-                visible-item-count="{{3}}"
-                show-toolbar="{{false}}"
-                bind:change="changeCity"
-              /> -->
-              <!-- <nut-picker v-model="livingPlaceCodes" :columns="columns" title="" @confirm="confirm" /> -->
+              <nut-picker
+                v-model="livingPlaceCodes"
+                class="area-custom"
+                option-height="40"
+                visible-option-num="3"
+                :showToolbar="false"
+                :columns="columns"
+              />
             </view>
           </view>
         </view>
@@ -248,6 +244,70 @@ const salaryList = reactive([
   '200万',
 ]);
 const photoList = ref([]);
+const value = ref(['Beijing', 'Daxing', 'Jinghai']);
+const columns = ref([
+  {
+    text: '请选择',
+    value: '00000',
+    children: [],
+  },
+  {
+    text: '江苏',
+    value: 'Jiangsu',
+    children: [
+      {
+        text: '南京',
+        value: 'Nanjing',
+      },
+      {
+        text: '苏州',
+        value: 'Suzhou',
+      },
+    ],
+  },
+  {
+    text: '北京',
+    value: 'Beijing',
+    children: [
+      {
+        text: '大兴',
+        value: 'Daxing',
+      },
+      {
+        text: '海淀',
+        value: 'Haidian',
+      },
+    ],
+  },
+  {
+    text: '北京',
+    value: 'Beijing',
+    children: [
+      {
+        text: '大兴',
+        value: 'Daxing',
+      },
+      {
+        text: '海淀',
+        value: 'Haidian',
+      },
+    ],
+  },
+  {
+    text: '北京',
+    value: 'Beijing',
+    children: [
+      {
+        text: '大兴',
+        value: 'Daxing',
+      },
+      {
+        text: '海淀',
+        value: 'Haidian',
+      },
+    ],
+  },
+]);
 
 const gender = ref('');
 const birthday = ref(1995);
@@ -660,6 +720,16 @@ onUnmounted(() => {
       border-radius: 50rpx;
       display: flex;
       flex-direction: column;
+
+      .area-custom {
+        background-color: #f9f9f9;
+        border-radius: 50rpx;
+        padding: 20rpx 20rpx;
+
+        picker-view {
+          height: 200rpx;
+        }
+      }
     }
   }
 
