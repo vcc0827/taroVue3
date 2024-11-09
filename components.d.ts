@@ -10,8 +10,6 @@ declare module 'vue' {
     Counter: typeof import('./src/components/Counter.vue')['default']
     NutAnimate: typeof import('@nutui/nutui-taro')['Animate']
     NutButton: typeof import('@nutui/nutui-taro')['Button']
-    NutGrid: typeof import('@nutui/nutui-taro')['Grid']
-    NutGridItem: typeof import('@nutui/nutui-taro')['GridItem']
     NutInput: typeof import('@nutui/nutui-taro')['Input']
     NutPicker: typeof import('@nutui/nutui-taro')['Picker']
     NutPopup: typeof import('@nutui/nutui-taro')['Popup']
