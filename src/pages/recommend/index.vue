@@ -278,6 +278,51 @@
       <SignOverlay :visible="showOverlay" @close="handleCloseOverlay"></SignOverlay>
     </view>
   </default-layout>
+
+  <nut-popup
+    v-model:visible="showPopUp"
+    class="popup-custom"
+    position="bottom"
+    z-index="999999"
+    round
+    :style="{ height: '30%' }"
+  >
+    <view class="popup-title">完善信息,获得精准匹配</view>
+    <view class="popup-container" :style="{ display: chooseCity ? 'none' : '' }">
+      <view class="popup-container-cell">
+        <nut-cell
+          title="你的所在地"
+          @tap="openLocationPopup"
+          style="color: #000; padding: 16px 26px; box-shadow: none; border-bottom: 2rpx solid #ebedf0"
+        >
+          <template #desc>
+            <view>
+              <text>{{ locationText }}</text>
+              <image
+                slot="right-icon"
+                src="https://static.hamu.site/mini/member/arrow.png"
+                class="icon-custom"
+                lazy-load
+              />
+            </view>
+          </template>
+        </nut-cell>
+        <view class="choose__gender">
+          <text>你的性别</text>
+          <view class="gender__item">
+            <view class="gender" :class="chooseGender === '男' ? 'gender--active' : ''" @tap="selectGender('男')"
+              >男</view
+            >
+            <view class="gender" :class="chooseGender === '女' ? 'gender--active' : ''" @tap="selectGender('女')"
+              >女</view
+            >
+          </view>
+        </view>
+      </view>
+      <button v-if="chooseCity" style="background: var(--primary-color)" class="sure" @tap="sure">确定</button>
+    </view>
+    <view class="popup-match-button"></view>
+  </nut-popup>
 </template>
 
 <script setup>
@@ -291,8 +336,8 @@ import { useNavbarStore } from 'src/stores/common';
 import { usePermissionStore } from 'src/stores/common';
 
 const permissionStore = usePermissionStore();
-
 const navbarStore = useNavbarStore();
+
 const topPadding = computed(() => navbarStore.statusBarHeight + navbarStore.navBarHeight);
 
 const recommendStore = useRecommendStore();
@@ -320,22 +365,19 @@ const tagBg = ref([
 ]);
 const friendNick = ['甲', '乙', '丙', '丁'];
 const showOverlay = ref(false);
+const locationText = ref('点击自动获取');
+const chooseGender = ref('男');
+
+const showPopUp = computed(() => {
+  return !permissionStore.isAdSource && !permissionStore.isRegister;
+});
+
+const selectGender = (gender) => {
+  chooseGender.value = gender;
+};
 
 const handleCloseOverlay = () => {
   showOverlay.value = false;
-};
-
-const tipsClick = () => {
-  visible3.value = true;
-};
-
-const visible3 = ref(false);
-const onCancel = () => {
-  visible3.value = false;
-};
-
-const onOk = () => {
-  visible3.value = false;
 };
 
 const filterPrivateInfo = computed(() => {
@@ -354,6 +396,10 @@ const filterPrivateInfo = computed(() => {
     );
   });
 });
+
+const openLocationPopup = () => {
+  console.log('打开地址选择');
+};
 
 const authPageRoute = ref('/pages/auth/index');
 
@@ -462,7 +508,8 @@ const goToAuth = () => {
 };
 
 onMounted(() => {
-  if (!checkPermission()) {
+  if (!checkPermission() && permissionStore.isAdSource) {
+    console.log('投放未注册');
     goToAuth();
     return;
   }
@@ -470,10 +517,6 @@ onMounted(() => {
   rollSwiper();
   handleSevenDays();
   handleRecommends();
-
-  tipsClick();
-  // 展示弹窗
-  // showOverlay.value = true;
 });
 </script>
 
@@ -961,6 +1004,62 @@ onMounted(() => {
         }
       }
     }
+  }
+}
+
+.popup-custom {
+  .popup-title {
+    line-height: 132rpx;
+    display: flex;
+    justify-content: center;
+    font-size: 32rpx;
+    font-weight: 500;
+    line-height: 132rpx;
+    text-align: center;
+  }
+  .popup-container-cell {
+    image {
+      width: 20rpx;
+      height: 20rpx;
+    }
+    .icon-custom {
+      margin-left: 16rpx;
+    }
+
+    .choose__gender {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      height: 130rpx;
+      box-sizing: border-box;
+      padding: 0 50rpx;
+      color: #131313;
+      font-size: 30rpx;
+      .gender__item {
+        display: flex;
+        .gender {
+          @include flex-box(center, center);
+          width: 120rpx;
+          height: 70rpx;
+          background: rgba(216, 216, 216, 0.2);
+          border-radius: 35rpx;
+          font-size: 28rpx;
+          font-weight: 500;
+        }
+        :first-child {
+          margin-right: 30rpx;
+        }
+        .gender--active {
+          color: #fff;
+          background: var(--primary-color);
+        }
+      }
+    }
+  }
+  .sure {
+    background: var(--primary-icon-color);
+    box-shadow: 0px 10rpx 10rpx 0px rgba(227, 84, 80, 0.2);
   }
 }
 </style>

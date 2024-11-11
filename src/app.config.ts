@@ -12,7 +12,7 @@ export default {
     navigationStyle: 'custom',
   },
   tabBar: {
-    custom: false,
+    custom: true,
     color: '#000000',
     selectedColor: '#fa731d',
     backgroundColor: '#ffffff',
