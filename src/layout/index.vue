@@ -1,5 +1,5 @@
 <template>
-  <view class="layout" :style="{ background: backgroundStyle}">
+  <view class="layout" :style="{ background: backgroundStyle }">
     <custom-nav-bar :title="pageTitle" :show-back="showBack" :show-home="showHome">
       <template #actions>
         <slot name="nav-actions"></slot>
@@ -42,7 +42,14 @@ onMounted(() => {
 });
 </script>
 <style lang="scss">
-.layout{
-  // height: calc(100vh - 88rpx - 48rpx - 100rpx - env(safe-area-inset-bottom))
+.layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+
+  .content {
+    flex: 1;
+    padding-bottom: calc(env(safe-area-inset-bottom) + 100rpx);
+  }
 }
 </style>

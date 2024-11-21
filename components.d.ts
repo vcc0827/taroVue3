@@ -8,6 +8,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     BasePopup: typeof import('./src/components/BasePopup.vue')['default']
+    NutActionSheet: typeof import('@nutui/nutui-taro')['ActionSheet']
     NutAnimate: typeof import('@nutui/nutui-taro')['Animate']
     NutButton: typeof import('@nutui/nutui-taro')['Button']
     NutCell: typeof import('@nutui/nutui-taro')['Cell']

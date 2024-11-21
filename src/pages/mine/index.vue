@@ -1,5 +1,5 @@
 <template>
-  <default-layout style="background: #f8f8f8;">
+  <default-layout>
     <view class="mine-container">
       <view class="top">
         <view class="msg">
@@ -141,7 +141,7 @@
   <!-- 弹窗 -->
   <base-popup
     popup-id="writeInfo"
-    v-model:visible="popups.writeInfo"
+    v-model:show="popups.writeInfo"
     :overlay="false"
     :popup-style="{ height: '698rpx', width: '580rpx', borderRadius: '20rpx' }"
   >
@@ -162,7 +162,7 @@
   <!-- 超级曝光 -->
   <base-popup
     popup-id="invisible"
-    v-model:visible="popups.invisibleOverlay"
+    v-model:show="popups.invisibleOverlay"
     class="overlay__box"
     :overlay="true"
     :popup-style="{ width: '580rpx', height: '520rpx', borderRadius: '20rpx' }"
@@ -230,7 +230,6 @@ const showPopup = (popupName) => {
 
 onMounted(() => {
   initData();
-  showPopup('invisibleOverlay');
 });
 
 // 处理头像编辑
@@ -270,7 +269,7 @@ const handleProfileView = debounce(async () => {
   });
   // 弹订阅消息
   // await subscribeMessage('want');
-});
+},300);
 // 处理个人信息编辑
 const handleProfileEdit = () => {
   const url = '/vendor-ext/pages/new-write-info/new-write-info';

@@ -1,12 +1,13 @@
 <template>
   <nut-popup
-    v-model:visible="show"
+    :visible="show"
     position="center"
     transition="slide-up"
     :style="mergedStyle"
     :overlay="true"
     :overlay-style="computedOverlayStyle"
     :close-on-click-overlay="closeOnClickOverlay"
+    @update:visible="$emit('update:show', $event)"
   >
     <slot></slot>
   </nut-popup>
@@ -20,9 +21,9 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  overlay:{
+  overlay: {
     type: Boolean,
-    default: true
+    default: true,
   },
   overlayStyle: {
     type: String,
@@ -37,12 +38,14 @@ const props = defineProps({
     default: true,
   },
 });
+defineEmits(['update:show']);
+
 const mergedStyle = computed(() => ({
   ...props.popupStyle,
 }));
 const computedOverlayStyle = computed(() => {
   console.log(props.overlay);
-  
+
   if (!props.overlay) {
     return 'background: transparent';
   }
