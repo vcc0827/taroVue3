@@ -42,9 +42,9 @@ export const useDeviceStore = defineStore('device', {
 
 export const usePermissionStore = defineStore('permission', {
   state: () => ({
-    isRegister: ref(false),
+    isRegister: ref(true),
     isAdSource: ref(false),
-    hasPhone: ref(false),
+    hasPhone: ref(true),
   }),
   actions: {
     updateRegister(value: Boolean) {

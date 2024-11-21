@@ -1,5 +1,5 @@
 <template>
-  <view class="layout" :style="{ background: backgroundStyle }">
+  <view class="layout" :style="{ background: backgroundStyle}">
     <custom-nav-bar :title="pageTitle" :show-back="showBack" :show-home="showHome">
       <template #actions>
         <slot name="nav-actions"></slot>
@@ -41,3 +41,8 @@ onMounted(() => {
   topPadding.value = navbarStore.statusBarHeight + navbarStore.navBarHeight;
 });
 </script>
+<style lang="scss">
+.layout{
+  // height: calc(100vh - 88rpx - 48rpx - 100rpx - env(safe-area-inset-bottom))
+}
+</style>

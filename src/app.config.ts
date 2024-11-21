@@ -1,5 +1,5 @@
 export default {
-  pages: ['pages/auth/index', 'pages/recommend/index', 'pages/home/index', 'pages/message/index', 'pages/mine/index'],
+  pages: ['pages/recommend/index', 'pages/auth/index', 'pages/home/index', 'pages/message/index', 'pages/mine/index'],
   subPackages: [
     {
       root: 'sub-package',

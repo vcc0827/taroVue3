@@ -77,16 +77,16 @@
       </nut-animate>
       <view class="sign-btns-ad">
         <button class="sign-disagree-btn-ad" @tap="disagree">不同意</button>
-        <button class="sign-agree-btn-ad" v-if="isAgree && !hasPhone" @tap="navigateToSignup">同意并注册</button>
-        <!-- <button
+        <!-- <button class="sign-agree-btn-ad" v-if="isAgree && !hasPhone" @tap="navigateToSignup">同意并注册</button> -->
+        <button
           class="sign-agree-btn-ad"
           v-if="isAgree && !hasPhone"
           open-type="getRealtimePhoneNumber"
           @GetRealTimePhoneNumber="fetchPhoneNumber"
         >
           同意并注册
-        </button> -->
-        <button class="sign-agree-btn-ad" v-else-if="isAgree && hasPhone" @tap="navigateToSignup">同意并注册</button>
+        </button>
+        <!-- <button class="sign-agree-btn-ad" v-else-if="isAgree && hasPhone" @tap="navigateToSignup">同意并注册</button> -->
         <button class="sign-agree-btn-ad" v-else @tap="checkAgree">同意并注册</button>
       </view>
     </nut-popup>
@@ -98,6 +98,7 @@ import { ref, reactive, computed } from 'vue';
 import Taro from '@tarojs/taro';
 import { useRouteStore, usePermissionStore } from 'src/stores/common';
 import { useCustomerInfoStore } from 'src/stores/user';
+const permissionStore = usePermissionStore();
 
 const props = defineProps({
   visible: {
@@ -115,13 +116,17 @@ const isShake = ref(false);
 const emit = defineEmits(['close']);
 const showBubble = ref(true);
 const isAgree = ref(false);
-const hasPhone = ref(false);
+const hasPhone = computed(()=>{
+  return permissionStore.hasPhone
+})
 const conf = ref({
   webView: 'https://h5.midonglab.com',
 });
 const selectedImg = ref('https://cdn.nodejs.cloud/match-plan/checked.png');
 const unSelectedImg = ref('https://static.hamu.site/mini/number-check/unchecked.png');
 const routeStore = useRouteStore();
+
+const customerInfo = useCustomerInfoStore();
 
 const handleClickOverlay = (e) => {
   emit('close');
@@ -149,16 +154,19 @@ const openToast = (title) => {
   });
 };
 const checkAgree = () => {
+  console.log(1);
+  
   if (!isAgree.value) {
     isShake.value = true;
     setTimeout(() => {
       isShake.value = false;
     }, 500);
+  }else{
+    navigateToSignup()
   }
 };
 
-const permissionStore = usePermissionStore();
-const customerInfo = useCustomerInfoStore();
+
 
 const fetchPhoneNumber = (e) => {
   const { errMsg, code } = e.mpEvent.detail;
@@ -172,7 +180,9 @@ const fetchPhoneNumber = (e) => {
   }
   try {
     // const phoneNumber = await rpc.blind.mini.getRealtimePhoneNumber(code);
+    let phoneNumber ='13312341234'
     if (code) {
+      console.log('code:',code)
       permissionStore.updateHasPhone(true);
       const list = {
         ...customerInfo.list,
@@ -198,9 +208,16 @@ const fetchPhoneNumber = (e) => {
 const navigateToSignup = () => {
   // Taro.reLaunch('/pages/recommend/index');
   const { isAdSource } = permissionStore;
-  const { isRegister } = customerInfo;
-  if (isRegister && isAdSource) {
-    Taro.reLaunch('/pages/recommend/index');
+  const { isRegister } = permissionStore;
+  console.log('isRegister,isAdSource',isRegister,isAdSource);
+  
+  if (isRegister) {
+    Taro.reLaunch({
+      url: '/pages/recommend/index',
+      fail:(err)=>{
+        console.log(err);
+      }
+    });
     return;
   }
 
@@ -236,7 +253,7 @@ const navigateToSignup = () => {
   overflow: scroll;
   scrollbar-width: none;
   border-radius: 16rpx;
-  margin-bottom: 48rpx;
+  margin-bottom: 18rpx;
   padding: 30rpx 0;
   -webkit-overflow-scrolling: touch;
 
