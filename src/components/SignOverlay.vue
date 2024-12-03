@@ -97,7 +97,7 @@
 import { ref, reactive, computed } from 'vue';
 import Taro from '@tarojs/taro';
 import { useRouteStore, usePermissionStore } from 'src/stores/common';
-import { useCustomerInfoStore } from 'src/stores/user';
+import { useCurrentCustomerInfoStore } from 'src/stores/user';
 const permissionStore = usePermissionStore();
 
 const props = defineProps({
@@ -116,9 +116,9 @@ const isShake = ref(false);
 const emit = defineEmits(['close']);
 const showBubble = ref(true);
 const isAgree = ref(false);
-const hasPhone = computed(()=>{
-  return permissionStore.hasPhone
-})
+const hasPhone = computed(() => {
+  return permissionStore.hasPhone;
+});
 const conf = ref({
   webView: 'https://h5.midonglab.com',
 });
@@ -126,7 +126,7 @@ const selectedImg = ref('https://cdn.nodejs.cloud/match-plan/checked.png');
 const unSelectedImg = ref('https://static.hamu.site/mini/number-check/unchecked.png');
 const routeStore = useRouteStore();
 
-const customerInfo = useCustomerInfoStore();
+const CustomerInfoStore = useCurrentCustomerInfoStore();
 
 const handleClickOverlay = (e) => {
   emit('close');
@@ -155,18 +155,16 @@ const openToast = (title) => {
 };
 const checkAgree = () => {
   console.log(1);
-  
+
   if (!isAgree.value) {
     isShake.value = true;
     setTimeout(() => {
       isShake.value = false;
     }, 500);
-  }else{
-    navigateToSignup()
+  } else {
+    navigateToSignup();
   }
 };
-
-
 
 const fetchPhoneNumber = (e) => {
   const { errMsg, code } = e.mpEvent.detail;
@@ -180,17 +178,17 @@ const fetchPhoneNumber = (e) => {
   }
   try {
     // const phoneNumber = await rpc.blind.mini.getRealtimePhoneNumber(code);
-    let phoneNumber ='13312341234'
+    let phoneNumber = '13312341234';
     if (code) {
-      console.log('code:',code)
+      console.log('code:', code);
       permissionStore.updateHasPhone(true);
       const list = {
-        ...customerInfo.list,
+        ...CustomerInfoStore.list,
         privacy_information: {
           手机号: phoneNumber,
         },
       };
-      customerInfo.updateCustomerInfo(list);
+      CustomerInfoStore.updateCustomerInfo(list);
       // wx.mew.customer_info.privacy_information['手机号'] = phoneNumber;
       // await syncPromise(true);
       return navigateToSignup();
@@ -209,14 +207,14 @@ const navigateToSignup = () => {
   // Taro.reLaunch('/pages/recommend/index');
   const { isAdSource } = permissionStore;
   const { isRegister } = permissionStore;
-  console.log('isRegister,isAdSource',isRegister,isAdSource);
-  
+  console.log('isRegister,isAdSource', isRegister, isAdSource);
+
   if (isRegister) {
     Taro.reLaunch({
       url: '/pages/recommend/index',
-      fail:(err)=>{
+      fail: (err) => {
         console.log(err);
-      }
+      },
     });
     return;
   }

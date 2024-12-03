@@ -45,6 +45,7 @@ export const usePermissionStore = defineStore('permission', {
     isRegister: ref(true),
     isAdSource: ref(false),
     hasPhone: ref(true),
+    authGroup: ref([]),
   }),
   actions: {
     updateRegister(value: Boolean) {
@@ -55,6 +56,15 @@ export const usePermissionStore = defineStore('permission', {
     },
     updateHasPhone(value: Boolean) {
       this.hasPhone = value;
+    },
+    updatePermission(data: any) {
+      Object.keys(data).forEach((key) => {
+        if (key in this) {
+          this[key] = data[key];
+        } else {
+          console.log(`${key} is not in permission info`);
+        }
+      });
     },
   },
 });

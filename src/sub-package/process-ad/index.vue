@@ -800,6 +800,7 @@ const handleIntermediateStep = () => {
 };
 const handleFinalStep = () => {
   if (formStore.form.livingPlace.length === 0) {
+    // TODO 文档上标明了，Taro.showToast 应与 Taro.hideToast 配对使用，因此需要在页面中引入 Taro.hideToast
     Taro.showToast({
       title: '请选择地址',
       icon: 'none',

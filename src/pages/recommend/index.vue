@@ -326,17 +326,22 @@
 </template>
 
 <script setup>
-import Taro from '@tarojs/taro';
+import Taro, { useLoad, useDidShow, useReady, useDidHide, useUnload } from '@tarojs/taro';
 import { ref, onMounted, computed } from 'vue';
 import { useRecommendStore, useSevenDaysStore } from '@/stores/user.ts';
+import { useRouterStore } from '@/stores/router';
 import { getImageUrl } from '@/pages/tools/imageFormat.ts';
-import DefaultLayout from 'src/layout/index.vue';
-import SignOverlay from 'src/components/SignOverlay.vue';
-import { useNavbarStore } from 'src/stores/common';
-import { usePermissionStore } from 'src/stores/common';
+import DefaultLayout from '@/layout/index.vue';
+import SignOverlay from '@/components/SignOverlay.vue';
+import { useNavbarStore, usePermissionStore } from '@/stores/common';
+import { useCurrentCustomerInfoStore } from '@/stores/user';
+import { rpc } from '../tools/conn';
+import { bindUserSource } from '../tools/source';
 
 const permissionStore = usePermissionStore();
 const navbarStore = useNavbarStore();
+const currentCustomerInfoStore = useCurrentCustomerInfoStore();
+const routerStore = useRouterStore();
 
 const topPadding = computed(() => navbarStore.statusBarHeight + navbarStore.navBarHeight);
 
@@ -367,6 +372,26 @@ const friendNick = ['甲', '乙', '丙', '丁'];
 const showOverlay = ref(false);
 const locationText = ref('点击自动获取');
 const chooseGender = ref('男');
+
+useLoad(() => {
+  console.log('recommend useLoad');
+});
+
+useDidShow(() => {
+  console.log('recommend useDidShow');
+});
+
+useReady(() => {
+  console.log('recommend useReady');
+});
+
+useDidHide(() => {
+  console.log('recommend useDidHide');
+});
+
+useUnload(() => {
+  console.log('recommend useUnload');
+});
 
 const showPopUp = computed(() => {
   return !permissionStore.isAdSource && !permissionStore.isRegister;
@@ -486,7 +511,11 @@ const handleRecommends = async () => {
 };
 
 const handleSevenDays = async () => {
-  await sevenDaysStore.getSevenDays();
+  const params = {
+    page: 1,
+    size: 6,
+  };
+  await sevenDaysStore.getSevenDays(params);
   newUserList.value = sevenDaysStore.list.value;
 };
 
@@ -507,14 +536,38 @@ const goToAuth = () => {
   });
 };
 
-onMounted(() => {
-  if (!checkPermission() && permissionStore.isAdSource) {
-    console.log('投放未注册');
-    goToAuth();
-    return;
-  }
+const initData = async () => {
+  rpc.blind.mini.getCurrentUserInfo().then((res) => {
+    const { customer_info, currentMember, switchInfo, weixinmp } = res;
+    currentCustomerInfoStore.updateCustomerInfo(customer_info);
+    currentCustomerInfoStore.updateCurrentMember(currentMember);
+    currentCustomerInfoStore.updateSwitchInfo(switchInfo);
+    currentCustomerInfoStore.updateWeixinmp(weixinmp);
 
-  rollSwiper();
+  });
+};
+const syncPromise = async () => {
+  await initData();
+  console.log('当前的userInfo:', currentCustomerInfoStore);
+};
+const getRecommendList = async () => {
+  const res = await rpc.blind.mini.getRecommend();
+  console.log('getRecommend:', res);
+};
+
+onMounted(async () => {
+  // 通过store获取当前是否注册 未注册的调用同步接口获取用户信息
+  await bindUserSource();
+  await syncPromise();
+  // getCurrentUserInfo();
+  // if (!checkPermission() && permissionStore.isAdSource) {
+  //   console.log('投放未注册');
+  //   goToAuth();
+  //   return;
+  // }
+
+  // rollSwiper();
+
   handleSevenDays();
   handleRecommends();
 });
@@ -544,464 +597,486 @@ onMounted(() => {
       @include flex-box(center, auto, column);
       color: #131313;
       font-size: 28rpx;
+    }
+    .empty__state {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      flex-direction: column;
 
-      .card {
-        height: calc(100% - 80rpx);
-        background: #fff;
-        box-shadow: 0 0 28rpx 0 rgba(0, 0, 0, 0.06);
-        border-radius: 14rpx;
-        width: 670rpx;
-        margin: 0 40rpx;
-        box-sizing: border-box;
-        scroll-behavior: smooth;
-        -webkit-overflow-scrolling: touch;
+      .recommend__title,
+      .recommend__sub-title {
+        text-align: center;
+        line-height: 40rpx;
+      }
 
-        .top {
-          position: relative;
-          height: 354rpx;
-          background: #fff;
+      .recommend__title {
+        font-size: 38rpx;
+        font-weight: 600;
+        color: #131313;
+        margin: 50rpx 0 20rpx 0;
+      }
 
-          .bg__cover {
-            width: 670rpx;
-            height: 260rpx;
-            vertical-align: bottom;
-          }
+      .recommend__sub-title {
+        font-size: 30rpx;
+        font-weight: 500;
+        color: var(--primary-color);
+      }
 
-          .head_img {
-            @include flex-box(center, center);
-            width: 224rpx;
-            height: 224rpx;
-            background: #f1f1f1;
-            border-radius: 50%;
-            position: absolute;
-            top: 100rpx;
-            margin-left: 30rpx;
+      .recommend__content {
+        display: flex;
+        flex-wrap: wrap;
+        margin-top: 30rpx;
+        justify-content: space-between;
 
-            image {
-              width: 216rpx;
-              height: 216rpx;
-              border-radius: 50%;
-            }
-          }
+        .recommend__person {
+          @include flex-box(center, center, column);
+          width: 275rpx;
+          height: 420rpx;
+          margin-bottom: 30rpx;
+          background-color: #fff;
+          box-shadow: 0 0 28rpx 0 rgba(0, 0, 0, 0.06);
+          border-radius: 10rpx;
 
-          .recommend__share {
-            @include flex-box(center, center);
-            position: absolute;
-            top: 20rpx;
-            right: 20rpx;
-            width: 122rpx;
-            height: 54rpx;
-            border-radius: 100rpx;
+          .specific__info {
+            width: 100%;
+            height: 150rpx;
+            background: #fff;
+            border-radius: 0 0 10rpx 10rpx;
+            padding: 20rpx 0 16rpx 20rpx;
+            box-sizing: border-box;
             font-size: 26rpx;
-            color: #fff;
-            padding: 0;
-            background: linear-gradient(140deg, #ab60ff 0%, #8a69ff 100%);
+            color: #6e6e6e;
+            line-height: 28rpx;
 
-            &::after {
-              border: none;
+            .person__name {
+              font-size: 30rpx;
+              font-weight: 600;
+              color: #131313;
             }
 
-            image {
-              width: 36rpx;
-              height: 36rpx;
-              margin-right: 6rpx;
+            :nth-child(2) {
+              margin: 14rpx 0;
+            }
+
+            :last-child {
+              display: flex;
+            }
+          }
+
+          &:nth-child(odd) {
+            margin: 0 40rpx;
+          }
+
+          &:nth-child(even) {
+            margin-right: 40rpx;
+          }
+
+          .cover {
+            width: 100%;
+            height: 270rpx;
+            vertical-align: bottom;
+            border-top-right-radius: 10rpx;
+            border-top-left-radius: 10rpx;
+            box-shadow: 0 0 28rpx 0 rgba(0, 0, 0, 0.06);
+          }
+        }
+      }
+
+      .more {
+        width: 400rpx;
+        height: 90rpx;
+        border-radius: 45rpx;
+        color: #fff;
+        font-size: 30rpx;
+        font-weight: 500;
+        line-height: 90rpx;
+      }
+    }
+    .card {
+      height: calc(100% - 80rpx);
+      background: #fff;
+      box-shadow: 0 0 28rpx 0 rgba(0, 0, 0, 0.06);
+      border-radius: 14rpx;
+      width: 670rpx;
+      margin: 0 40rpx;
+      box-sizing: border-box;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+
+      .top {
+        position: relative;
+        height: 354rpx;
+        background: #fff;
+
+        .bg__cover {
+          width: 670rpx;
+          height: 260rpx;
+          vertical-align: bottom;
+        }
+
+        .head_img {
+          @include flex-box(center, center);
+          width: 224rpx;
+          height: 224rpx;
+          background: #f1f1f1;
+          border-radius: 50%;
+          position: absolute;
+          top: 100rpx;
+          margin-left: 30rpx;
+
+          image {
+            width: 216rpx;
+            height: 216rpx;
+            border-radius: 50%;
+          }
+        }
+
+        .recommend__share {
+          @include flex-box(center, center);
+          position: absolute;
+          top: 20rpx;
+          right: 20rpx;
+          width: 122rpx;
+          height: 54rpx;
+          border-radius: 100rpx;
+          font-size: 26rpx;
+          color: #fff;
+          padding: 0;
+          background: linear-gradient(140deg, #ab60ff 0%, #8a69ff 100%);
+
+          &::after {
+            border: none;
+          }
+
+          image {
+            width: 36rpx;
+            height: 36rpx;
+            margin-right: 6rpx;
+          }
+        }
+      }
+
+      .info {
+        margin-left: 30rpx;
+
+        .base__info,
+        .identify,
+        .introduce,
+        .tags,
+        .photos,
+        .question,
+        .friends_impression,
+        .ideal-lover {
+          margin-bottom: 60rpx;
+        }
+
+        .name {
+          @include flex-box(initial, center);
+          font-size: 38rpx;
+          font-weight: 600;
+          line-height: 40rpx;
+          margin-bottom: 30rpx;
+
+          .auth {
+            width: 34rpx;
+            height: 34rpx;
+            margin-left: 20rpx;
+          }
+
+          text {
+            font-size: 24rpx;
+            color: #6e6e6e;
+            margin-left: 16rpx;
+            margin-top: 10rpx;
+          }
+        }
+
+        .common__tags {
+          @include flex-box(initial, center);
+          margin-bottom: 30rpx;
+          flex-wrap: wrap;
+
+          text {
+            padding: 0 18rpx;
+            height: 50rpx;
+            border-radius: 30rpx;
+            margin-right: 10rpx;
+            color: #fff;
+            font-size: 24rpx;
+            line-height: 50rpx;
+            margin-bottom: 10rpx;
+          }
+        }
+
+        .info-item {
+          margin-bottom: 30rpx;
+          color: #6e6e6e;
+        }
+
+        .identify {
+          padding-right: 30rpx;
+
+          .identify-box {
+            @include flex-box(space-between, center);
+
+            .identify-id-box,
+            .identify-real-box {
+              // @include flex-box(space-evenly, center);
+              display: flex;
+              justify-content: space-evenly;
+              align-items: center;
+              width: 294rpx;
+              height: 128rpx;
+              border-radius: 16rpx;
+
+              image {
+                width: 64rpx;
+                height: 64rpx;
+              }
+            }
+
+            .identify-content {
+              height: 64rpx;
+              @include flex-box(space-between, initial, column);
+              position: relative;
+              color: #000;
+              font-size: 24rpx;
+
+              &::after {
+                content: '';
+                background-image: url('https://static.hamu.site/mini/identify-tips.png');
+                background-size: contain;
+                width: 30rpx;
+                height: 30rpx;
+                display: inline-block;
+                position: absolute;
+                top: -40rpx;
+                right: -40rpx;
+              }
+
+              .identify-title {
+                font-size: 28rpx;
+                font-weight: 600;
+              }
             }
           }
         }
 
-        .info {
-          margin-left: 30rpx;
+        .tags {
+        }
 
-          .base__info,
-          .identify,
-          .introduce,
-          .tags,
-          .photos,
-          .question,
-          .friends_impression,
-          .ideal-lover {
-            margin-bottom: 60rpx;
+        .tag {
+          display: flex;
+          flex-wrap: wrap;
+          grid-row-gap: 20rpx;
+          grid-column-gap: 20rpx;
+
+          .tag-item {
+            color: var(--primary-color);
+            padding: 20rpx 30rpx;
+            box-sizing: border-box;
+            height: 70rpx;
+            background: rgba(227, 84, 80, 0.06);
+            border-radius: 35rpx;
+            font-size: 28rpx;
+            line-height: 28rpx;
           }
+        }
 
-          .name {
-            @include flex-box(initial, center);
-            font-size: 38rpx;
-            font-weight: 600;
-            line-height: 40rpx;
-            margin-bottom: 30rpx;
-
-            .auth {
-              width: 34rpx;
-              height: 34rpx;
-              margin-left: 20rpx;
-            }
-
-            text {
-              font-size: 24rpx;
-              color: #6e6e6e;
-              margin-left: 16rpx;
-              margin-top: 10rpx;
-            }
-          }
-
-          .common__tags {
-            @include flex-box(initial, center);
-            margin-bottom: 30rpx;
-            flex-wrap: wrap;
-
-            text {
-              padding: 0 18rpx;
-              height: 50rpx;
-              border-radius: 30rpx;
-              margin-right: 10rpx;
-              color: #fff;
-              font-size: 24rpx;
-              line-height: 50rpx;
-              margin-bottom: 10rpx;
-            }
-          }
-
+        .photos {
           .info-item {
-            margin-bottom: 30rpx;
-            color: #6e6e6e;
+            font-size: 0;
+            vertical-align: bottom;
           }
 
-          .identify {
-            padding-right: 30rpx;
+          image {
+            border-radius: 14rpx;
+            width: 610rpx;
+            height: 610rpx;
+          }
+        }
 
-            .identify-box {
-              @include flex-box(space-between, center);
+        .question {
+          padding-right: 58rpx;
 
-              .identify-id-box,
-              .identify-real-box {
-                // @include flex-box(space-evenly, center);
-                display: flex;
-                justify-content: space-evenly;
-                align-items: center;
-                width: 294rpx;
-                height: 128rpx;
-                border-radius: 16rpx;
+          .question-item {
+            @include flex-box(flex-start, flex-start, column);
+            padding: 0;
+            margin-bottom: 48rpx;
 
-                image {
-                  width: 64rpx;
-                  height: 64rpx;
-                }
-              }
-
-              .identify-content {
-                height: 64rpx;
-                @include flex-box(space-between, initial, column);
-                position: relative;
-                color: #000;
-                font-size: 24rpx;
-
-                &::after {
-                  content: '';
-                  background-image: url('https://static.hamu.site/mini/identify-tips.png');
-                  background-size: contain;
-                  width: 30rpx;
-                  height: 30rpx;
-                  display: inline-block;
-                  position: absolute;
-                  top: -40rpx;
-                  right: -40rpx;
-                }
-
-                .identify-title {
-                  font-size: 28rpx;
-                  font-weight: 600;
-                }
-              }
+            &:last-child {
+              margin-bottom: 0;
             }
-          }
 
-          .tags {
-          }
+            .question-detail {
+              @include flex-box(initial, flex-start);
+              margin-bottom: 0;
+            }
 
-          .tag {
-            display: flex;
-            flex-wrap: wrap;
-            grid-row-gap: 20rpx;
-            grid-column-gap: 20rpx;
+            .question-answer {
+              margin: 22rpx 0 0 60rpx;
+              line-height: 42rpx;
+              color: #6e6e6e;
+            }
 
-            .tag-item {
-              color: var(--primary-color);
-              padding: 20rpx 30rpx;
-              box-sizing: border-box;
-              height: 70rpx;
-              background: rgba(227, 84, 80, 0.06);
-              border-radius: 35rpx;
+            .question-index {
+              margin-right: 16rpx;
+              width: 44rpx;
+              height: 44rpx;
+              flex-shrink: 0;
+            }
+
+            .question-title {
               font-size: 28rpx;
-              line-height: 28rpx;
+              font-weight: 600;
+              line-height: 42rpx;
+              padding-top: 2rpx;
+              word-break: break-word;
+            }
+
+            &:nth-last-of-type(1) {
+              border: 0;
+            }
+          }
+        }
+
+        .friends_impression {
+          padding-right: 28rpx;
+
+          .friend-item {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 36rpx;
+          }
+
+          .friend-icon {
+            width: 30rpx;
+            height: 30rpx;
+            margin-right: 10rpx;
+          }
+
+          .friend {
+            @include flex-box(center, center);
+            font-weight: 500;
+            color: var(--primary-color);
+            line-height: 28rpx;
+            width: 170rpx;
+            height: 60rpx;
+            background: rgba(227, 84, 80, 0.06);
+            border-radius: 30rpx;
+            margin-bottom: 20rpx;
+          }
+
+          .friend-content {
+            color: #6e6e6e;
+            line-height: 42rpx;
+          }
+        }
+
+        .ideal-lover {
+          padding-right: 40rpx;
+
+          .ideal-info {
+            margin-bottom: 24rpx;
+            line-height: 42rpx;
+            display: flex;
+            flex-wrap: nowrap;
+            color: #6e6e6e;
+
+            text {
+              flex-shrink: 0;
+              width: 100%;
+            }
+          }
+        }
+
+        .privacy {
+          padding-bottom: 60rpx;
+
+          .privacy__top {
+            @include flex-box(space-between, center);
+            margin-bottom: 40rpx;
+
+            .name {
+              margin-bottom: 0;
+            }
+
+            .feedback {
+              @include flex-box(initial, center);
+              font-size: 26rpx;
+              color: #6e6e6e;
+              margin-right: 30rpx;
+
+              image {
+                width: 28rpx;
+                height: 28rpx;
+                margin-right: 10rpx;
+              }
             }
           }
 
-          .photos {
-            .info-item {
-              font-size: 0;
-              vertical-align: bottom;
-            }
+          .privacy__list {
+            position: relative;
 
-            image {
-              border-radius: 14rpx;
-              width: 610rpx;
-              height: 610rpx;
-            }
-          }
-
-          .question {
-            padding-right: 58rpx;
-
-            .question-item {
-              @include flex-box(flex-start, flex-start, column);
-              padding: 0;
-              margin-bottom: 48rpx;
+            .privacy__item {
+              @include flex-box(initial, center);
+              color: #6e6e6e;
+              margin-right: 30rpx;
+              margin-bottom: 24rpx;
 
               &:last-child {
-                margin-bottom: 0;
+                margin-bottom: 32rpx;
               }
 
-              .question-detail {
-                @include flex-box(initial, flex-start);
-                margin-bottom: 0;
-              }
-
-              .question-answer {
-                margin: 22rpx 0 0 60rpx;
-                line-height: 42rpx;
-                color: #6e6e6e;
-              }
-
-              .question-index {
-                margin-right: 16rpx;
-                width: 44rpx;
-                height: 44rpx;
-                flex-shrink: 0;
-              }
-
-              .question-title {
+              .privacy__title {
                 font-size: 28rpx;
-                font-weight: 600;
-                line-height: 42rpx;
-                padding-top: 2rpx;
-                word-break: break-word;
-              }
-
-              &:nth-last-of-type(1) {
-                border: 0;
-              }
-            }
-          }
-
-          .friends_impression {
-            padding-right: 28rpx;
-
-            .friend-item {
-              display: flex;
-              flex-direction: column;
-              margin-bottom: 36rpx;
-            }
-
-            .friend-icon {
-              width: 30rpx;
-              height: 30rpx;
-              margin-right: 10rpx;
-            }
-
-            .friend {
-              @include flex-box(center, center);
-              font-weight: 500;
-              color: var(--primary-color);
-              line-height: 28rpx;
-              width: 170rpx;
-              height: 60rpx;
-              background: rgba(227, 84, 80, 0.06);
-              border-radius: 30rpx;
-              margin-bottom: 20rpx;
-            }
-
-            .friend-content {
-              color: #6e6e6e;
-              line-height: 42rpx;
-            }
-          }
-
-          .ideal-lover {
-            padding-right: 40rpx;
-
-            .ideal-info {
-              margin-bottom: 24rpx;
-              line-height: 42rpx;
-              display: flex;
-              flex-wrap: nowrap;
-              color: #6e6e6e;
-
-              text {
                 flex-shrink: 0;
-                width: 100%;
-              }
-            }
-          }
-
-          .privacy {
-            padding-bottom: 60rpx;
-
-            .privacy__top {
-              @include flex-box(space-between, center);
-              margin-bottom: 40rpx;
-
-              .name {
-                margin-bottom: 0;
+                width: 140rpx;
+                opacity: 1;
+                line-height: 40rpx;
               }
 
-              .feedback {
-                @include flex-box(initial, center);
-                font-size: 26rpx;
-                color: #6e6e6e;
-                margin-right: 30rpx;
-
-                image {
-                  width: 28rpx;
-                  height: 28rpx;
-                  margin-right: 10rpx;
-                }
+              .privacy__info {
+                font-size: 28rpx;
+                word-break: break-all;
+                display: flex;
+                line-height: 40rpx;
               }
             }
 
-            .privacy__list {
-              position: relative;
+            .bought {
+              color: var(--primary-color);
 
-              .privacy__item {
-                @include flex-box(initial, center);
-                color: #6e6e6e;
-                margin-right: 30rpx;
-                margin-bottom: 24rpx;
-
-                &:last-child {
-                  margin-bottom: 32rpx;
-                }
-
-                .privacy__title {
-                  font-size: 28rpx;
-                  flex-shrink: 0;
-                  width: 140rpx;
-                  opacity: 1;
-                  line-height: 40rpx;
-                }
-
-                .privacy__info {
-                  font-size: 28rpx;
-                  word-break: break-all;
-                  display: flex;
-                  line-height: 40rpx;
-                }
-              }
-
-              .bought {
-                color: var(--primary-color);
-
-                image {
-                  width: 40rpx;
-                  height: 40rpx;
-                  padding: 0 5rpx;
-                }
+              image {
+                width: 40rpx;
+                height: 40rpx;
+                padding: 0 5rpx;
               }
             }
           }
         }
       }
-
-      .empty__state {
-        @include flex-box(initial, center, column);
-
-        .recommend__title,
-        .recommend__sub-title {
-          text-align: center;
-          line-height: 40rpx;
-        }
-
-        .recommend__title {
-          font-size: 38rpx;
-          font-weight: 600;
-          color: #131313;
-          margin: 50rpx 0 20rpx 0;
-        }
-
-        .recommend__sub-title {
-          font-size: 30rpx;
-          font-weight: 500;
-          color: var(--primary-color);
-        }
-
-        .recommend__content {
-          display: flex;
-          flex-wrap: wrap;
-          margin-top: 30rpx;
-          justify-content: space-between;
-
-          .recommend__person {
-            @include flex-box(center, center, column);
-            width: 275rpx;
-            height: 420rpx;
-            margin-bottom: 30rpx;
-            background-color: #fff;
-            box-shadow: 0 0 28rpx 0 rgba(0, 0, 0, 0.06);
-            border-radius: 10rpx;
-
-            .specific__info {
-              width: 100%;
-              height: 150rpx;
-              background: #fff;
-              border-radius: 0 0 10rpx 10rpx;
-              padding: 20rpx 0 16rpx 20rpx;
-              box-sizing: border-box;
-              font-size: 26rpx;
-              color: #6e6e6e;
-              line-height: 28rpx;
-
-              .person__name {
-                font-size: 30rpx;
-                font-weight: 600;
-                color: #131313;
-              }
-
-              :nth-child(2) {
-                margin: 14rpx 0;
-              }
-
-              :last-child {
-                display: flex;
-              }
-            }
-
-            &:nth-child(odd) {
-              margin: 0 40rpx;
-            }
-
-            &:nth-child(even) {
-              margin-right: 40rpx;
-            }
-
-            .cover {
-              width: 100%;
-              height: 270rpx;
-              vertical-align: bottom;
-              border-top-right-radius: 10rpx;
-              border-top-left-radius: 10rpx;
-              box-shadow: 0 0 28rpx 0 rgba(0, 0, 0, 0.06);
-            }
-          }
-        }
-
-        .more {
-          width: 400rpx;
-          height: 90rpx;
-          border-radius: 45rpx;
-          color: #fff;
-          font-size: 30rpx;
-          font-weight: 500;
-          line-height: 90rpx;
-        }
+    }
+    .subscribe {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-size: 28rpx;
+      color: var(--primary-color);
+      margin-bottom: 144rpx;
+      margin-top: 240rpx;
+      .title {
+        font-size: 36rpx;
+        font-weight: 600;
+        line-height: 36rpx;
+        margin-bottom: 30rpx;
+      }
+      .qrcode {
+        width: 270rpx;
+        height: 270rpx;
+        margin-top: 58rpx;
       }
     }
   }
@@ -1057,9 +1132,10 @@ onMounted(() => {
       }
     }
   }
-  .sure {
-    background: var(--primary-icon-color);
-    box-shadow: 0px 10rpx 10rpx 0px rgba(227, 84, 80, 0.2);
-  }
+}
+.sure,
+.more {
+  background: var(--primary-icon-color);
+  box-shadow: 0px 10rpx 10rpx 0px rgba(227, 84, 80, 0.2);
 }
 </style>

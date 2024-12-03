@@ -16,6 +16,9 @@ declare module 'vue' {
     NutPicker: typeof import('@nutui/nutui-taro')['Picker']
     NutPopup: typeof import('@nutui/nutui-taro')['Popup']
     NutRange: typeof import('@nutui/nutui-taro')['Range']
+    NutSticky: typeof import('@nutui/nutui-taro')['Sticky']
+    NutTabPane: typeof import('@nutui/nutui-taro')['TabPane']
+    NutTabs: typeof import('@nutui/nutui-taro')['Tabs']
     SignOverlay: typeof import('./src/components/SignOverlay.vue')['default']
   }
 }

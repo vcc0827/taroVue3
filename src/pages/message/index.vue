@@ -80,7 +80,7 @@
         <view class="concern__text" v-else>
           当前你申请了{{ mineApplyCount }}个人的微信，关注服务号即可实时查看对方的处理情况。
         </view>
-        <view class="exposure__btn" @tap="createUsers">立即解锁</view>
+        <view class="exposure__btn" @tap="goToConcernOfficialAccount">立即解锁</view>
       </view>
     </base-popup>
   </default-layout>
@@ -292,7 +292,7 @@ const createUsers = async () => {
 };
 
 const initData = async () => {
-  await getUsers();
+  // await getUsers();
   // 同步当前数据
   // getApplyCount 获取 friendApplyCount 和 mineApplyCount
   // getCustomerInfo 获取用户的信息

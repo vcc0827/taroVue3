@@ -3,7 +3,14 @@ export default {
   subPackages: [
     {
       root: 'sub-package',
-      pages: ['write-info/index', 'core-info/index', 'web-view/index', 'process-nature/index', 'process-ad/index'],
+      pages: [
+        'write-info/index',
+        'core-info/index',
+        'web-view/index',
+        'process-nature/index',
+        'process-ad/index',
+        'detail/index',
+      ],
     },
   ],
   window: {

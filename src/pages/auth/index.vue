@@ -27,11 +27,9 @@
 </template>
 
 <script setup>
-import Taro from '@tarojs/taro';
-import { getCurrentInstance } from '@tarojs/taro';
+import Taro, { useRouter } from '@tarojs/taro';
 import { ref, computed, onMounted } from 'vue';
 import { useNavbarStore, usePermissionStore, useRouteStore } from 'src/stores/common';
-import { useCustomerInfoStore } from 'src/stores/user';
 import SignOverlay from 'src/components/SignOverlay.vue';
 
 // 常量
@@ -41,7 +39,6 @@ const LOGO_IMG = 'https://static.hamu.site/mini/match_mini_logo.png?imageView2/1
 const navbarStore = useNavbarStore();
 const routeStore = useRouteStore();
 const permissionStore = usePermissionStore();
-const customerInfo = useCustomerInfoStore();
 
 // Refs
 const showOverlay = ref(false);
@@ -89,8 +86,8 @@ const handleOverlayAndLogin = () => {
 };
 
 const getRouteOptions = () => {
-  const instance = getCurrentInstance();
-  routeStore.setRouteOption(instance.router.params);
+  const router = useRouter();
+  routeStore.setRouteOption(router.params);
   const routeOptions = routeStore.options;
   if (routeOptions.originSource) {
     permissionStore.updateAdSource(true);

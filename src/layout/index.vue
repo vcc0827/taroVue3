@@ -1,5 +1,5 @@
 <template>
-  <view class="layout" :style="{ background: backgroundStyle }">
+  <view class="layout" :style="{ background: backgroundStyle, height: '100%' }">
     <custom-nav-bar :title="pageTitle" :show-back="showBack" :show-home="showHome">
       <template #actions>
         <slot name="nav-actions"></slot>
@@ -17,7 +17,13 @@ import { ref, onMounted, computed } from 'vue';
 import { pageConfigs } from 'src/config/pages';
 import { useNavbarStore } from 'src/stores/common';
 
-const backgroundStyle = ref('');
+const props = defineProps({
+  background: {
+    type: String,
+    default: '',
+  },
+});
+const backgroundStyle = computed(() => props.background);
 const pageTitle = ref('');
 const showBack = ref(true);
 const showHome = ref(false);

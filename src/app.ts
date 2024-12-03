@@ -3,12 +3,24 @@ import { createPinia } from 'pinia';
 
 import CustomNavBar from 'src/pages/custom-nav-bar/index.vue';
 import DefaultLayout from 'src/layout/index.vue';
+// import { checkAuth } from './pages/tools/check';
 
 import './app.scss';
 
 const App = createApp({
-  onShow() {},
-  onLaunch() {},
+  onShow() {
+    console.log('App onShow');
+  },
+  onLaunch() {
+    console.log('App onLaunch');
+    // checkAuth(); // 检查登录状态
+  },
+  onHide() {
+    console.log('App onHide');
+  },
+  mounted() {
+    console.log('App mounted');
+  },
 });
 
 App.use(createPinia());
